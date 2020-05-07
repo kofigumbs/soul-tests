@@ -1,0 +1,10 @@
+graph echo  [[main]]
+{
+    input stream float audioIn;
+    output stream float audioOut;
+
+    connection
+    {
+        audioIn -> audioOut;
+    }
+}
