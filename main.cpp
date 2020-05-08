@@ -26,8 +26,8 @@ void ma_ondata(ma_device* device, void* output, const void* input, ma_uint32 fra
     // SOUL requires a nested array, but miniaudio uses a flat array of pairs
     for (int i = 0; i < frameCount; i++) {
       inputChannels[0][i] = &(*inputArray)[i*2];
-      inputChannels[1][i] = &(*inputArray)[i*2];
-      outputChannels[0][i] = &(*outputArray)[i*2 + 1];
+      inputChannels[1][i] = &(*inputArray)[i*2 + 1];
+      outputChannels[0][i] = &(*outputArray)[i*2];
       outputChannels[1][i] = &(*outputArray)[i*2 + 1];
     }
 
@@ -75,7 +75,7 @@ int main() {
 
     // Run device until any character is pressed
     ma_device_start(&device);
-    std::cout << "Press any key to quit..."
+    std::cout << "Press any key to quit...";
     std::getchar();
     ma_device_uninit(&device);
 }
