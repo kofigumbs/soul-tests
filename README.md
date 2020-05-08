@@ -3,7 +3,7 @@
 **Quick Start**
 
 ```
-g++ -std=c++17 -L"/usr/local/lib/" main.cpp
+g++ -std=c++17 -L"<PATH TO `SOUL_PatchLoader.dylib` DIRECTORY>" main.cpp
 ./a.out
 ```
 

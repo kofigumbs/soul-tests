@@ -25,10 +25,10 @@ void ma_ondata(ma_device* device, void* output, const void* input, ma_uint32 fra
 
     // SOUL requires a nested array, but miniaudio uses a flat array of pairs
     for (int i = 0; i < frameCount; i++) {
-      inputChannels[0][i] = &(*inputArray)[i*2];
-      inputChannels[1][i] = &(*inputArray)[i*2 + 1];
-      outputChannels[0][i] = &(*outputArray)[i*2];
-      outputChannels[1][i] = &(*outputArray)[i*2 + 1];
+      for (int j = 0; j < device->playback.channels; j++) {
+        inputChannels[j][i] = &(*inputArray)[i*2 + j];
+        outputChannels[j][i] = &(*outputArray)[i*2 + j];
+      }
     }
 
     userData->context.outputChannels = (float* const*) outputChannels;
@@ -47,28 +47,27 @@ int main() {
     audioConfig.playback.format = ma_format_f32;
     ma_device_init(NULL, &audioConfig, &device);
 
-    // TODO Derive these from device
-    const int stereo = 2;
-    const int frameCount = 512;
-    const int midiCount = 1024;
+    // TODO what are good numbers for these?
+    const int maxMidi = 1024;
+    const int maxFrames = 1024;
 
     // Setup SOUL
     SOULPatchLibrary library("/usr/local/lib/SOUL_PatchLoader.dylib");
     PatchInstance::Ptr patch = library.createPatchFromFileBundle("echo.soulpatch");
     PatchPlayerConfiguration playerConfig;
     playerConfig.sampleRate = device.sampleRate;
-    playerConfig.maxFramesPerBlock = frameCount;
+    playerConfig.maxFramesPerBlock = maxFrames;
 
-    MIDIMessage incomingMIDI[midiCount], outgoingMIDI[midiCount];
+    MIDIMessage incomingMIDI[maxMidi], outgoingMIDI[maxMidi];
     PatchPlayer::Ptr player = patch->compileNewPlayer(playerConfig, NULL, NULL, NULL, NULL);
     PatchPlayer::RenderContext context;
-    context.numInputChannels = stereo;
-    context.numOutputChannels = stereo;
+    context.numInputChannels = device.playback.channels;
+    context.numOutputChannels = device.playback.channels;
     context.incomingMIDI = incomingMIDI;
     context.outgoingMIDI = outgoingMIDI;
     context.numMIDIMessagesIn = 0;
     context.numMIDIMessagesOut = 0;
-    context.maximumMIDIMessagesOut = midiCount;
+    context.maximumMIDIMessagesOut = maxMidi;
 
     userData.player = player;
     userData.context = context;
