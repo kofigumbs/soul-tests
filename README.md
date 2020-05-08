@@ -11,8 +11,8 @@ g++ -std=c++17 -L"<PATH TO `SOUL_PatchLoader.dylib` DIRECTORY>" main.cpp
 
 This is the smallest audio programming proof-of-concept I could come up with:
 
- - Listen to primary audio device playback with [miniaudio](github.com/dr-soft/miniaudio)
- - Send audio input to [SOUL](github.com/soul-lang/SOUL)
+ - Listen to primary audio device playback with [miniaudio](https://github.com/dr-soft/miniaudio)
+ - Send audio input to [SOUL](https://github.com/soul-lang/SOUL)
  - Listen to audio output from SOUL
  - Write to primary audio device with miniaudio
 
