@@ -6,15 +6,15 @@
 
 using namespace soul::patch;
 
-// SOUL data we need for each "tick"
+// SOUL data we need for each frame
 //
 struct UserData {
   PatchPlayer::Ptr player;
 };
 
-// Pull from miniaudio "tick", push to SOUL "tick"
+// Pull from miniaudio frame, push to SOUL frame
 //
-void ma_ondata(ma_device* device, void* output, const void* input, ma_uint32 frameCount) {
+void callback(ma_device* device, void* output, const void* input, ma_uint32 frameCount) {
     // Setup SOUL RenderContext
     const int maxMidi = 1024; // TODO what is a good number for this?
     MIDIMessage incomingMIDI[maxMidi], outgoingMIDI[maxMidi];
@@ -27,8 +27,8 @@ void ma_ondata(ma_device* device, void* output, const void* input, ma_uint32 fra
     context.numMIDIMessagesOut = 0;
     context.maximumMIDIMessagesOut = maxMidi;
 
-    // Convert from miniaudio  [ l0, r0, l1, r1, ... ]
-    //                to SOUL  [[ l0, l1, ... ], [ r0, r1, ... ]]
+    // Convert from miniaudio frame  [ l0, r0, l1, r1, ... ]
+    //                to SOUL frame  [[ l0, l1, ... ], [ r0, r1, ... ]]
     auto inputArray = *((float(*)[]) input);
     auto outputArray = *((float(*)[]) output);
     const float* inputChannels[device->capture.channels][frameCount];
@@ -43,7 +43,7 @@ void ma_ondata(ma_device* device, void* output, const void* input, ma_uint32 fra
     context.inputChannels = (const float* const*) inputChannels;
     context.numFrames = frameCount;
 
-    // SOUL "tick"
+    // Render SOUL frame
     UserData* userData = (UserData (*)) device->pUserData;
     userData->player->render(context);
 }
@@ -53,7 +53,7 @@ int main() {
     UserData userData;
     ma_device device;
     ma_device_config audioConfig = ma_device_config_init(ma_device_type_duplex);
-    audioConfig.dataCallback = ma_ondata;
+    audioConfig.dataCallback = callback;
     audioConfig.playback.format = ma_format_f32;
     audioConfig.pUserData = &userData;
     ma_device_init(NULL, &audioConfig, &device);
