@@ -54,6 +54,7 @@ int main() {
     ma_device device;
     ma_device_config audioConfig = ma_device_config_init(ma_device_type_duplex);
     audioConfig.dataCallback = callback;
+    audioConfig.capture.format = ma_format_f32;
     audioConfig.playback.format = ma_format_f32;
     audioConfig.pUserData = &userData;
     ma_device_init(NULL, &audioConfig, &device);
