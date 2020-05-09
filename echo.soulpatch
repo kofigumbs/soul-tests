@@ -8,7 +8,7 @@
         "description":      null,
         "category":         null,
         "manufacturer":     "Kofi Gumbs",
-        "isInstrument":     "true",
+        "isInstrument":     true,
         "source":           [ "echo.soul" ],
     }
 }

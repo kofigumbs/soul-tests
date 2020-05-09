@@ -9,7 +9,7 @@ using namespace soul::patch;
 // SOUL data we need for each frame
 //
 struct UserData {
-  PatchPlayer::Ptr player;
+    PatchPlayer::Ptr player;
 };
 
 // Pull from miniaudio frame, push to SOUL frame
@@ -34,11 +34,11 @@ void callback(ma_device* device, void* output, const void* input, ma_uint32 fram
     const float* inputChannels[device->capture.channels][frameCount];
     const float* outputChannels[device->playback.channels][frameCount];
     for (int i = 0; i < frameCount; i++)
-      for (int j = 0; j < device->capture.channels; j++)
-        inputChannels[j][i] = &inputArray[i*device->capture.channels + j];
+        for (int j = 0; j < device->capture.channels; j++)
+            inputChannels[j][i] = &inputArray[i*device->capture.channels + j];
     for (int i = 0; i < frameCount; i++)
-      for (int j = 0; j < device->playback.channels; j++)
-        outputChannels[j][i] = &outputArray[i*device->playback.channels + j];
+        for (int j = 0; j < device->playback.channels; j++)
+            outputChannels[j][i] = &outputArray[i*device->playback.channels + j];
     context.outputChannels = (float* const*) outputChannels;
     context.inputChannels = (const float* const*) inputChannels;
     context.numFrames = frameCount;
