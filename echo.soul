@@ -1,13 +1,10 @@
 graph echo  [[main]]
 {
-    input  stream float leftIn;
-    input  stream float rightIn;
-    output stream float leftOut;
-    output stream float rightOut;
+    input  stream float<2> audioIn;
+    output stream float<2> audioOut;
 
     connection
     {
-        leftIn  -> leftOut;
-        rightIn -> rightOut;
+        audioIn -> audioOut;
     }
 }
