@@ -1,4 +1,4 @@
-*** ⚠️ WARNING: Wear headphones!***
+***⚠️ WARNING: Wear headphones!***
 
 **Quick Start (macOS)**
 
