@@ -35,10 +35,10 @@ void callback(ma_device* device, void* output, const void* input, ma_uint32 fram
     const float* outputChannels[device->playback.channels][frameCount];
     for (int i = 0; i < frameCount; i++)
       for (int j = 0; j < device->capture.channels; j++)
-        inputChannels[j][i] = &inputArray[i*2 + j];
+        inputChannels[j][i] = &inputArray[i*device->capture.channels + j];
     for (int i = 0; i < frameCount; i++)
       for (int j = 0; j < device->playback.channels; j++)
-        outputChannels[j][i] = &outputArray[i*2 + j];
+        outputChannels[j][i] = &outputArray[i*device->playback.channels + j];
     context.outputChannels = (float* const*) outputChannels;
     context.inputChannels = (const float* const*) inputChannels;
     context.numFrames = frameCount;
@@ -58,6 +58,12 @@ int main() {
     audioConfig.playback.format = ma_format_f32;
     audioConfig.pUserData = &userData;
     ma_device_init(NULL, &audioConfig, &device);
+
+    // .soul file is hard-coded to work with sterio I/O
+    if (device.capture.channels != 2 || device.playback.channels != 2) {
+      std::cout << "Please use stero I/O" << std::endl;
+      return 1;
+    }
 
     // Setup SOUL
     SOULPatchLibrary library("lib/SOUL_PatchLoader.dylib");
