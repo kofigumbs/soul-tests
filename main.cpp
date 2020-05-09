@@ -53,17 +53,11 @@ int main() {
     UserData userData;
     ma_device device;
     ma_device_config audioConfig = ma_device_config_init(ma_device_type_duplex);
+    audioConfig.capture.channels = 1;
+    audioConfig.playback.channels = 1;
     audioConfig.dataCallback = callback;
-    audioConfig.capture.format = ma_format_f32;
-    audioConfig.playback.format = ma_format_f32;
     audioConfig.pUserData = &userData;
     ma_device_init(NULL, &audioConfig, &device);
-
-    // .soul file is hard-coded to work with sterio I/O
-    if (device.capture.channels != 2 || device.playback.channels != 2) {
-      std::cout << "Please use stero I/O" << std::endl;
-      return 1;
-    }
 
     // Setup SOUL
     SOULPatchLibrary library("lib/SOUL_PatchLoader.dylib");
@@ -75,7 +69,7 @@ int main() {
 
     // Run device until any character is pressed
     ma_device_start(&device);
-    std::cout << "Press any key to quit...";
+    std::cout << "Press Enter to exit...";
     std::getchar();
     ma_device_uninit(&device);
 }

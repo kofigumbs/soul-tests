@@ -19,6 +19,4 @@ This is the smallest audio programming proof-of-concept I could come up with:
  - Listen to audio output from SOUL
  - Write to primary audio device with miniaudio
 
-It kinda works, but it sounds distorted.
-When I use `MA_COPY_MEMORY` to bypass SOUL, things sound OK, so it's probably related to how I manage the I/O buffers.
 This is my first time writing C++, so forgive any oddities and/or mistakes.
