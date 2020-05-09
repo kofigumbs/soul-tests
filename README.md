@@ -1,11 +1,14 @@
-***WARNING: Wear headphones!***
+*** ⚠️ WARNING: Wear headphones!***
 
-**Quick Start**
+**Quick Start (macOS)**
 
 ```
-g++ -std=c++17 -L"<PATH TO `SOUL_PatchLoader.dylib` DIRECTORY>" main.cpp
-./a.out
+TMPDIR=`mktemp -d` \
+  && g++ -std=c++17 -L"lib" main.cpp -o"$TMPDIR/a.out" \
+  && $TMPDIR/a.out
 ```
+
+To build on different platforms, reference the relevant library in the `-L` flag _and_ the `SOULPatchLibrary` constructor.
 
 # What is this
 

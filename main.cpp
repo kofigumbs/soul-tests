@@ -60,7 +60,7 @@ int main() {
     ma_device_init(NULL, &audioConfig, &device);
 
     // Setup SOUL
-    SOULPatchLibrary library("/usr/local/lib/SOUL_PatchLoader.dylib");
+    SOULPatchLibrary library("lib/SOUL_PatchLoader.dylib");
     PatchInstance::Ptr patch = library.createPatchFromFileBundle("echo.soulpatch");
     PatchPlayerConfiguration playerConfig;
     playerConfig.sampleRate = device.sampleRate;
