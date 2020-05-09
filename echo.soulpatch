@@ -2,14 +2,13 @@
 {
     "soulPatchV1":
     {
-        "ID":               "com.yourcompany.echo",
+        "ID":               "echo",
         "version":          "0.1",
         "name":             "echo",
-        "description":      "This is a SOUL Patch called echo!",
-        "category":         "synth",
-        "manufacturer":     "Your Company Name",
-        "isInstrument":     "false",
-
+        "description":      null,
+        "category":         null,
+        "manufacturer":     "Kofi Gumbs",
+        "isInstrument":     "true",
         "source":           [ "echo.soul" ],
     }
 }
