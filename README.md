@@ -8,7 +8,7 @@
 
 -
     ```
-    g++ -std=c++17 main.cpp L"./tmp" -o"./tmp/echo"
+    g++ -std=c++17 src/miniaudio.cpp L"./tmp" -o"./tmp/echo"
     ./tmp/echo
     ```
 
