@@ -1,7 +1,7 @@
 #define MINIAUDIO_IMPLEMENTATION
 
 #include <iostream>
-#include "miniaudio/miniaudio.h"
+#include "rtaudio/RtAudio.h"
 #include "SOUL/source/API/soul_patch/API/soul_patch.h"
 
 using namespace soul::patch;
@@ -10,66 +10,70 @@ using namespace soul::patch;
 //
 struct UserData {
     PatchPlayer::Ptr player;
+    unsigned int bufferFrames = 0;
 };
 
-// Pull from miniaudio frame, push to SOUL frame
+// Pull from RtAudio frame, push to SOUL frame
 //
-void callback(ma_device* device, void* output, const void* input, ma_uint32 frameCount) {
+int callback(void *output, void *input, unsigned int frameCount, double streamTime, RtAudioStreamStatus status, void *data) {
     // Setup SOUL RenderContext
     const int maxMidi = 1024; // TODO what is a good number for this?
     MIDIMessage incomingMIDI[maxMidi], outgoingMIDI[maxMidi];
     PatchPlayer::RenderContext context;
-    context.numInputChannels = device->capture.channels;
-    context.numOutputChannels = device->playback.channels;
+    context.numFrames = frameCount;
+    context.numInputChannels  = 2; // TODO derive from RtAudio
+    context.numOutputChannels = 2; // TODO derive from RtAudio
     context.incomingMIDI = incomingMIDI;
     context.outgoingMIDI = outgoingMIDI;
     context.numMIDIMessagesIn = 0;
     context.numMIDIMessagesOut = 0;
     context.maximumMIDIMessagesOut = maxMidi;
 
-    // Convert from miniaudio frame  [ l0, r0, l1, r1, ... ]
-    //                to SOUL frame  [[ l0, l1, ... ], [ r0, r1, ... ]]
-    auto inputArray = *((float(*)[]) input);
-    auto outputArray = *((float(*)[]) output);
-    const float* inputChannels[device->capture.channels][frameCount];
-    const float* outputChannels[device->playback.channels][frameCount];
-    for (int i = 0; i < frameCount; i++)
-        for (int j = 0; j < device->capture.channels; j++)
-            inputChannels[j][i] = &inputArray[i*device->capture.channels + j];
-    for (int i = 0; i < frameCount; i++)
-        for (int j = 0; j < device->playback.channels; j++)
-            outputChannels[j][i] = &outputArray[i*device->playback.channels + j];
-    context.outputChannels = (float* const*) outputChannels;
-    context.inputChannels = (const float* const*) inputChannels;
-    context.numFrames = frameCount;
+    float* inputChannels[context.numFrames * context.numInputChannels];
+    float* outputChannels[context.numFrames * context.numOutputChannels];
+    for (int i = 0; i < context.numFrames * context.numInputChannels; i++)
+        inputChannels[i] = ((float (*)) input) + i;
+    for (int i = 0; i < context.numFrames * context.numOutputChannels; i++)
+        outputChannels[i] = ((float (*)) output) + i;
+    context.inputChannels = inputChannels;
+    context.outputChannels = outputChannels;
 
     // Render SOUL frame
-    UserData* userData = (UserData (*)) device->pUserData;
+    UserData* userData = (UserData (*)) data;
     userData->player->render(context);
+    return 0;
 }
 
 int main() {
-    // Setup miniaudio
-    UserData userData;
-    ma_device device;
-    ma_device_config audioConfig = ma_device_config_init(ma_device_type_duplex);
-    audioConfig.capture.channels = 1;
-    audioConfig.playback.channels = 1;
-    audioConfig.dataCallback = callback;
-    audioConfig.pUserData = &userData;
-    ma_device_init(NULL, &audioConfig, &device);
+    RtAudio dac;
+    try {
+        // Setup RtAudio
+        UserData userData;
+        double sampleRate = 44100;
+        RtAudio::StreamOptions options;
+        options.flags = RTAUDIO_NONINTERLEAVED;
+        RtAudio::StreamParameters iParams, oParams;
+        iParams.nChannels = 2;
+        oParams.nChannels = 2;
+        iParams.deviceId = dac.getDefaultInputDevice();
+        oParams.deviceId = dac.getDefaultOutputDevice();
+        dac.openStream(&oParams, &iParams, RTAUDIO_FLOAT32, sampleRate, &userData.bufferFrames, &callback, (void*) &userData, &options);
 
-    // Setup SOUL
-    SOULPatchLibrary library("lib/SOUL_PatchLoader.dylib");
-    PatchInstance::Ptr patch = library.createPatchFromFileBundle("echo.soulpatch");
-    PatchPlayerConfiguration playerConfig;
-    playerConfig.sampleRate = device.sampleRate;
-    playerConfig.maxFramesPerBlock = 512; // TODO what is a good number for this?
-    userData.player = patch->compileNewPlayer(playerConfig, NULL, NULL, NULL, NULL);
+        // Setup SOUL
+        SOULPatchLibrary library("lib/SOUL_PatchLoader.dylib");
+        PatchInstance::Ptr patch = library.createPatchFromFileBundle("echo.soulpatch");
+        PatchPlayerConfiguration playerConfig;
+        playerConfig.sampleRate = sampleRate; // TODO derive from device default
+        playerConfig.maxFramesPerBlock = userData.bufferFrames;
+        userData.player = patch->compileNewPlayer(playerConfig, NULL, NULL, NULL, NULL);
 
-    // Run device until any character is pressed
-    ma_device_start(&device);
-    std::cout << "Press Enter to exit...";
-    std::getchar();
-    ma_device_uninit(&device);
+        // Run until keypress
+        dac.startStream();
+        std::cout << "Press Enter to exit...";
+        std::getchar();
+        dac.stopStream();
+    } catch (RtAudioError& e) {
+        e.printMessage();
+        if (dac.isStreamOpen()) dac.closeStream();
+    }
 }

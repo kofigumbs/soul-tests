@@ -3,15 +3,15 @@
 **Quick Start (macOS)**
 
 1. Download the relevant <https://github.com/soul-lang/SOUL/releases/latest> library into `./lib/`
+2. Build RtAudio submodule with instructions from <https://github.com/thestk/rtaudio/blob/master/install.txt>
 2. 
     ```
-    g++ -std=c++17 SOUL/source/modules/soul_core/soul_core.cpp -c -o lib/soul_core.o
-    TMPDIR=`mktemp -d` \
-      && g++ -std=c++17 -L"lib" main.cpp lib/soul_core.o -o"$TMPDIR/a.out" \
-      && $TMPDIR/a.out
+    g++ -std=c++17 main.cpp rtaudio/.libs/librtaudio.dylib \
+      && install_name_tool -change /usr/local/lib/librtaudio.6.dylib @executable_path/rtaudio/.libs/librtaudio.dylib a.out \
+      && ./a.out
     ```
 
-To build on non-macOS platforms, update the `SOULPatchLibrary` constructor call in `main()`.
+To build on non-macOS platforms, update the `g++` command _and_ the `SOULPatchLibrary` constructor call in `main()`.
 
 # What is this
 
