@@ -2,13 +2,16 @@
 
 **Quick Start (macOS)**
 
-```
-TMPDIR=`mktemp -d` \
-  && g++ -std=c++17 -L"lib" main.cpp -o"$TMPDIR/a.out" \
-  && $TMPDIR/a.out
-```
+1. Download the relevant <https://github.com/soul-lang/SOUL/releases/latest> library into `./lib/`
+2. 
+    ```
+    g++ -std=c++17 SOUL/source/modules/soul_core/soul_core.cpp -c -o lib/soul_core.o
+    TMPDIR=`mktemp -d` \
+      && g++ -std=c++17 -L"lib" main.cpp lib/soul_core.o -o"$TMPDIR/a.out" \
+      && $TMPDIR/a.out
+    ```
 
-To build on different platforms, reference the relevant library in the `-L` flag _and_ the `SOULPatchLibrary` constructor.
+To build on non-macOS platforms, update the `SOULPatchLibrary` constructor call in `main()`.
 
 # What is this
 
