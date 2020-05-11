@@ -1,13 +1,15 @@
-***⚠️ WARNING: Wear headphones!***
+***⚠️ WARNING: Use headphones!***
 
-**Quick Start (macOS)**
+# Quick Start (macOS)
 
-1. Download the relevant <https://github.com/soul-lang/SOUL/releases/latest> library into `./lib/`
-2. 
+- Download the relevant <https://github.com/soul-lang/SOUL/releases/latest> library into `./tmp`
+
+## miniaudio
+
+-
     ```
-    TMPDIR=`mktemp -d` \
-      && g++ -std=c++17 -L"lib" main.cpp lib/soul_core.o -o"$TMPDIR/a.out" \
-      && $TMPDIR/a.out
+    g++ -std=c++17 main.cpp L"./tmp" -o"./tmp/echo"
+    ./tmp/echo
     ```
 
 To build on non-macOS platforms, update the `SOULPatchLibrary` constructor call in `main()`.
@@ -16,7 +18,7 @@ To build on non-macOS platforms, update the `SOULPatchLibrary` constructor call 
 
 This is the smallest audio programming proof-of-concept I could come up with:
 
- - Listen to primary audio device playback with [miniaudio](https://github.com/dr-soft/miniaudio)
+ - Listen to primary audio device playback with some DSP library
  - Send audio input to [SOUL](https://github.com/soul-lang/SOUL)
  - Listen to audio output from SOUL
  - Write to primary audio device with miniaudio
