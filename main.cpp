@@ -43,6 +43,20 @@ void callback(ma_device* device, void* output, const void* input, ma_uint32 fram
     context.inputChannels = (const float* const*) inputChannels;
     context.numFrames = frameCount;
 
+    //
+    // SOME ATTEMPTS TO USE LIBRARY FUNCTIONS
+    //
+    // InterleavedChannelSet<const float> iInputSet = {};
+    // iInputSet.numChannels = context.numInputChannels;
+    // iInputSet.numFrames = frameCount;
+    // iInputSet.stride = sizeof(float);
+    // iInputSet.data = (const float(*)) input;
+    // auto dInputSet = DiscreteChannelSet<float>::createAllocatedCopy(iInputSet);
+    //
+    // ma_deinterleave_pcm_frames(device->capture.internalFormat, context.numInputChannels, frameCount, (void*) inputArray, (void**) inputChannels);
+    // ma_deinterleave_pcm_frames(device->playback.internalFormat, context.numOutputChannels, frameCount, (void*) outputArray, (void**) outputChannels);
+    //
+
     // Render SOUL frame
     UserData* userData = (UserData (*)) device->pUserData;
     userData->player->render(context);
