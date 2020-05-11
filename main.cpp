@@ -67,8 +67,6 @@ int main() {
     UserData userData;
     ma_device device;
     ma_device_config audioConfig = ma_device_config_init(ma_device_type_duplex);
-    audioConfig.capture.channels = 1;
-    audioConfig.playback.channels = 1;
     audioConfig.dataCallback = callback;
     audioConfig.pUserData = &userData;
     ma_device_init(NULL, &audioConfig, &device);
@@ -78,7 +76,7 @@ int main() {
     PatchInstance::Ptr patch = library.createPatchFromFileBundle("echo.soulpatch");
     PatchPlayerConfiguration playerConfig;
     playerConfig.sampleRate = device.sampleRate;
-    playerConfig.maxFramesPerBlock = 512; // TODO what is a good number for this?
+    playerConfig.maxFramesPerBlock = 64; // TODO what is a good number for this?
     userData.player = patch->compileNewPlayer(playerConfig, NULL, NULL, NULL, NULL);
 
     // Run device until any character is pressed
