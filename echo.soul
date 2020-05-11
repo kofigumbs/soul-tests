@@ -1,7 +1,7 @@
 graph echo  [[main]]
 {
-    input  stream float<2> audioIn;
-    output stream float<2> audioOut;
+    input  stream float32<2> audioIn;
+    output stream float32<2> audioOut;
 
     connection
     {

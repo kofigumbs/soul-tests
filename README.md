@@ -4,7 +4,7 @@
 
 - Download the relevant <https://github.com/soul-lang/SOUL/releases/latest> library into `./tmp`
 
-## miniaudio
+#### w/ miniaudio
 
 -
     ```
@@ -12,7 +12,15 @@
     ./tmp/echo
     ```
 
-To build on non-macOS platforms, update the `SOULPatchLibrary` constructor call in `main()`.
+#### w/ RtAudio
+
+- Build RtAudio submodule with instructions from <https://github.com/thestk/rtaudio/blob/master/install.txt>
+- 
+    ```
+    g++ -std=c++17 src/rtaudio.cpp rtaudio/.libs/librtaudio.dylib -o ./tmp/a.out \
+      && install_name_tool -change /usr/local/lib/librtaudio.6.dylib @executable_path/rtaudio/.libs/librtaudio.dylib ./tmp/a.out \
+      && ./tmp/a.out
+    ```
 
 # What is this
 
