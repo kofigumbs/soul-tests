@@ -10,7 +10,6 @@ using namespace soul::patch;
 //
 struct UserData {
     PatchPlayer::Ptr player;
-    unsigned int bufferFrames = 0;
 };
 
 // Pull from RtAudio frame, push to SOUL frame
@@ -29,12 +28,11 @@ int callback(void *output, void *input, unsigned int frameCount, double streamTi
     context.numMIDIMessagesOut = 0;
     context.maximumMIDIMessagesOut = maxMidi;
 
-    float* inputChannels[context.numFrames * context.numInputChannels];
-    float* outputChannels[context.numFrames * context.numOutputChannels];
-    for (int i = 0; i < context.numFrames * context.numInputChannels; i++)
-        inputChannels[i] = ((float (*)) input) + i;
-    for (int i = 0; i < context.numFrames * context.numOutputChannels; i++)
-        outputChannels[i] = ((float (*)) output) + i;
+    unsigned int framesIn  = context.numFrames * context.numInputChannels,
+                 framesOut = context.numFrames * context.numOutputChannels;
+    float *inputChannels[framesIn], *outputChannels[framesOut];
+    for (int i = 0; i < framesIn;  i++) inputChannels[i]  = ((float (*)) input)  + i;
+    for (int i = 0; i < framesOut; i++) outputChannels[i] = ((float (*)) output) + i;
     context.inputChannels = inputChannels;
     context.outputChannels = outputChannels;
 
@@ -49,7 +47,8 @@ int main() {
     try {
         // Setup RtAudio
         UserData userData;
-        double sampleRate = 44100;
+        double sampleRate = 44100; // TODO use device default
+        unsigned int bufferFrames = 64;
         RtAudio::StreamOptions options;
         options.flags = RTAUDIO_NONINTERLEAVED;
         RtAudio::StreamParameters iParams, oParams;
@@ -57,14 +56,14 @@ int main() {
         oParams.nChannels = 2;
         iParams.deviceId = dac.getDefaultInputDevice();
         oParams.deviceId = dac.getDefaultOutputDevice();
-        dac.openStream(&oParams, &iParams, RTAUDIO_FLOAT32, sampleRate, &userData.bufferFrames, &callback, (void*) &userData, &options);
+        dac.openStream(&oParams, &iParams, RTAUDIO_FLOAT32, sampleRate, &bufferFrames, &callback, (void*) &userData, &options);
 
         // Setup SOUL
         SOULPatchLibrary library("lib/SOUL_PatchLoader.dylib");
         PatchInstance::Ptr patch = library.createPatchFromFileBundle("echo.soulpatch");
         PatchPlayerConfiguration playerConfig;
-        playerConfig.sampleRate = sampleRate; // TODO derive from device default
-        playerConfig.maxFramesPerBlock = userData.bufferFrames;
+        playerConfig.sampleRate = sampleRate;
+        playerConfig.maxFramesPerBlock = bufferFrames;
         userData.player = patch->compileNewPlayer(playerConfig, NULL, NULL, NULL, NULL);
 
         // Run until keypress
