@@ -53,6 +53,8 @@ int main(int argc, char *argv[]) {
     UserData userData;
     ma_device device;
     ma_device_config audioConfig = ma_device_config_init(ma_device_type_duplex);
+    audioConfig.capture.channels = channelCount(argc, argv);
+    audioConfig.playback.channels = channelCount(argc, argv);
     audioConfig.dataCallback = callback;
     audioConfig.pUserData = &userData;
     ma_device_init(NULL, &audioConfig, &device);

@@ -8,7 +8,7 @@ struct UserData {
 };
 
 bool isStereo(int argc, char* argv[]) {
-  return argc > 0 && strncmp(argv[0], "stereo", 6);
+  return argc > 0 && strncmp(argv[0], "stereo", 6) == 0;
 }
 
 PatchPlayer::Ptr loadSoulPlayer(int argc, char *argv[], double sampleRate, unsigned int bufferFrames) {

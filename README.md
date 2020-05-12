@@ -1,4 +1,4 @@
-|lib|Mono|Stereo|
+||Mono|Stereo|
 |---|---|---|
 |miniaudio|✅|⛔️|
 |RtAudio|✅|⛔️|
