@@ -1,8 +1,8 @@
 #define MINIAUDIO_IMPLEMENTATION
 
 #include <iostream>
-#include "miniaudio/miniaudio.h"
-#include "SOUL/source/API/soul_patch/API/soul_patch.h"
+#include "../miniaudio/miniaudio.h"
+#include "../SOUL/source/API/soul_patch/API/soul_patch.h"
 
 using namespace soul::patch;
 

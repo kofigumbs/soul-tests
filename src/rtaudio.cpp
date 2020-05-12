@@ -1,7 +1,7 @@
 
 #include <iostream>
-#include "rtaudio/RtAudio.h"
-#include "SOUL/source/API/soul_patch/API/soul_patch.h"
+#include "../rtaudio/RtAudio.h"
+#include "../SOUL/source/API/soul_patch/API/soul_patch.h"
 
 using namespace soul::patch;
 
