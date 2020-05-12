@@ -14,7 +14,7 @@ bool isStereo(int argc, char* argv[]) {
 PatchPlayer::Ptr loadSoulPlayer(int argc, char *argv[], double sampleRate, unsigned int bufferFrames) {
     SOULPatchLibrary library("build/SOUL_PatchLoader.dylib");
     PatchInstance::Ptr patch = library.createPatchFromFileBundle(
-        isStereo(argc, argv) ? "stereo.soulpatch" : "mono.soulpatch"
+        isStereo(argc, argv) ? "audio/stereo.soulpatch" : "audio/mono.soulpatch"
     );
     PatchPlayerConfiguration playerConfig;
     playerConfig.sampleRate = sampleRate;
