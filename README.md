@@ -13,8 +13,8 @@
 
 -
     ```
-    g++ -std=c++17 src/miniaudio.cpp L"./tmp" -o"./tmp/echo"
-    ./tmp/echo
+    g++ -std=c++17 src/miniaudio.cpp -o"./tmp/a.out"
+    ./tmp/a.out
     ```
 
 #### w/ RtAudio
