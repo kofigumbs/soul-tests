@@ -13,7 +13,7 @@
 
 -
     ```
-    g++ -std=c++17 src/miniaudio.cpp -o"./tmp/a.out"
+    g++ -std=c++17 main/miniaudio.cpp -o"./tmp/a.out"
     ./tmp/a.out
     ```
 
@@ -22,7 +22,7 @@
 - Build RtAudio submodule with instructions from <https://github.com/thestk/rtaudio/blob/master/install.txt>
 - 
     ```
-    g++ -std=c++17 src/rtaudio.cpp rtaudio/.libs/librtaudio.dylib -o ./tmp/a.out
+    g++ -std=c++17 main/rtaudio.cpp rtaudio/.libs/librtaudio.dylib -o ./tmp/a.out
     install_name_tool -change /usr/local/lib/librtaudio.6.dylib @executable_path/../rtaudio/.libs/librtaudio.dylib ./tmp/a.out
     ./tmp/a.out
     ```
@@ -32,7 +32,7 @@
 - Build portaudio with `./configure --enable-mac-universal=no && make`
 -
     ```
-    g++ -std=c++17 src/portaudio.cpp portaudio/lib/.libs/libportaudio.dylib -o ./tmp/a.out
+    g++ -std=c++17 main/portaudio.cpp portaudio/lib/.libs/libportaudio.dylib -o ./tmp/a.out
     install_name_tool -change /usr/local/lib/libportaudio.2.dylib @executable_path/../portaudio/lib/.libs/libportaudio.dylib ./tmp/a.out
     ./tmp/a.out
     ```
