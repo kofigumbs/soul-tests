@@ -8,10 +8,11 @@ using namespace soul::patch;
 // Pull from PortAudio frame, push to SOUL frame
 //
 int callback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *data) {
+    UserData* userData = (UserData (*)) data;
     PatchPlayer::RenderContext context = loadSoulContext();
     context.numFrames = frameCount;
-    context.numInputChannels  = 2; // TODO derive from PortAudio
-    context.numOutputChannels = 2; // TODO derive from PortAudio
+    context.numInputChannels  = userData->channelCount;
+    context.numOutputChannels = userData->channelCount;
 
     unsigned int framesIn  = context.numFrames * context.numInputChannels,
                  framesOut = context.numFrames * context.numOutputChannels;
@@ -22,7 +23,6 @@ int callback(const void *input, void *output, unsigned long frameCount, const Pa
     context.outputChannels = outputChannels;
 
     // Render SOUL frame
-    UserData* userData = (UserData (*)) data;
     userData->player->render(context);
     return 0;
 }
