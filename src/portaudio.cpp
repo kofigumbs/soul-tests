@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include "../portaudio/include/portaudio.h"
 #include "../SOUL/source/API/soul_patch/API/soul_patch.h"
@@ -51,7 +50,7 @@ int main() {
     error = Pa_OpenDefaultStream(&stream, 2, 2, paFloat32, sampleRate, bufferFrames, callback, &userData);
 
     // Setup SOUL
-    SOULPatchLibrary library("lib/SOUL_PatchLoader.dylib");
+    SOULPatchLibrary library("tmp/SOUL_PatchLoader.dylib");
     PatchInstance::Ptr patch = library.createPatchFromFileBundle("echo.soulpatch");
     PatchPlayerConfiguration playerConfig;
     playerConfig.sampleRate = sampleRate;
@@ -59,11 +58,11 @@ int main() {
     userData.player = patch->compileNewPlayer(playerConfig, NULL, NULL, NULL, NULL);
 
     // Run until keypress
-    if (error != paNoError) return 1;
+    if (error != paNoError) { std::cout << Pa_GetErrorText(error); return 1; }
     error = Pa_StartStream(stream);
-    if (error != paNoError) return 2;
+    if (error != paNoError) { std::cout << Pa_GetErrorText(error); return 2; }
     std::cout << "Press Enter to exit...";
     std::getchar();
     error = Pa_StopStream(stream);
-    if (error != paNoError) return 3;
+    if (error != paNoError) { std::cout << Pa_GetErrorText(error); return 3; }
 }

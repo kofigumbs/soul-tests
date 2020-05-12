@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include "../rtaudio/RtAudio.h"
 #include "../SOUL/source/API/soul_patch/API/soul_patch.h"
@@ -58,7 +57,7 @@ int main() {
         dac.openStream(&oParams, &iParams, RTAUDIO_FLOAT32, sampleRate, &bufferFrames, &callback, (void*) &userData, &options);
 
         // Setup SOUL
-        SOULPatchLibrary library("lib/SOUL_PatchLoader.dylib");
+        SOULPatchLibrary library("tmp/SOUL_PatchLoader.dylib");
         PatchInstance::Ptr patch = library.createPatchFromFileBundle("echo.soulpatch");
         PatchPlayerConfiguration playerConfig;
         playerConfig.sampleRate = sampleRate;
