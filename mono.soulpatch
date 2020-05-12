@@ -1,0 +1,14 @@
+
+{
+    "soulPatchV1":
+    {
+        "ID":               "mono",
+        "version":          "0.1",
+        "name":             "mono",
+        "description":      null,
+        "category":         null,
+        "manufacturer":     "Kofi Gumbs",
+        "isInstrument":     true,
+        "source":           [ "mono.soul" ],
+    }
+}

@@ -1,4 +1,4 @@
-graph echo  [[main]]
+graph stereo  [[main]]
 {
     input  stream float32<2> audioIn;
     output stream float32<2> audioOut;

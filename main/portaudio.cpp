@@ -1,30 +1,17 @@
 #include <iostream>
+#include "shared.h"
 #include "../portaudio/include/portaudio.h"
 #include "../SOUL/source/API/soul_patch/API/soul_patch.h"
 
 using namespace soul::patch;
 
-// SOUL data we need for each frame
-//
-struct UserData {
-    PatchPlayer::Ptr player;
-};
-
 // Pull from PortAudio frame, push to SOUL frame
 //
 int callback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *data) {
-    // Setup SOUL RenderContext
-    const int maxMidi = 1024; // TODO what is a good number for this?
-    MIDIMessage incomingMIDI[maxMidi], outgoingMIDI[maxMidi];
-    PatchPlayer::RenderContext context;
+    PatchPlayer::RenderContext context = loadSoulContext();
     context.numFrames = frameCount;
     context.numInputChannels  = 2; // TODO derive from PortAudio
     context.numOutputChannels = 2; // TODO derive from PortAudio
-    context.incomingMIDI = incomingMIDI;
-    context.outgoingMIDI = outgoingMIDI;
-    context.numMIDIMessagesIn = 0;
-    context.numMIDIMessagesOut = 0;
-    context.maximumMIDIMessagesOut = maxMidi;
 
     unsigned int framesIn  = context.numFrames * context.numInputChannels,
                  framesOut = context.numFrames * context.numOutputChannels;
@@ -40,22 +27,15 @@ int callback(const void *input, void *output, unsigned long frameCount, const Pa
     return 0;
 }
 
-int main() {
-    // Setup PortAudio
+int main(int argc, char* argv[]) {
     UserData userData;
     PaStream *stream;
     PaError error;
     unsigned int bufferFrames = 64;
     double sampleRate = 44100; // TODO use device default
-    error = Pa_OpenDefaultStream(&stream, 2, 2, paFloat32, sampleRate, bufferFrames, callback, &userData);
-
-    // Setup SOUL
-    SOULPatchLibrary library("build/SOUL_PatchLoader.dylib");
-    PatchInstance::Ptr patch = library.createPatchFromFileBundle("echo.soulpatch");
-    PatchPlayerConfiguration playerConfig;
-    playerConfig.sampleRate = sampleRate;
-    playerConfig.maxFramesPerBlock = bufferFrames;
-    userData.player = patch->compileNewPlayer(playerConfig, NULL, NULL, NULL, NULL);
+    error = Pa_OpenDefaultStream(&stream, channelCount(argc, argv), channelCount(argc, argv), paFloat32, sampleRate, bufferFrames, callback, &userData);
+    userData.channelCount = channelCount(argc, argv);
+    userData.player = loadSoulPlayer(argc, argv, sampleRate, bufferFrames);
 
     // Run until keypress
     if (error != paNoError) { std::cout << Pa_GetErrorText(error); return 1; }

@@ -2,13 +2,13 @@
 {
     "soulPatchV1":
     {
-        "ID":               "echo",
+        "ID":               "stereo",
         "version":          "0.1",
-        "name":             "echo",
+        "name":             "stereo",
         "description":      null,
         "category":         null,
         "manufacturer":     "Kofi Gumbs",
         "isInstrument":     true,
-        "source":           [ "echo.soul" ],
+        "source":           [ "stereo.soul" ],
     }
 }

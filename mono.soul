@@ -1,0 +1,10 @@
+graph mono  [[main]]
+{
+    input  stream float32 audioIn;
+    output stream float32 audioOut;
+
+    connection
+    {
+        audioIn -> audioOut;
+    }
+}
