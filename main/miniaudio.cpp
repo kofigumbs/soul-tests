@@ -52,14 +52,15 @@ void callback(ma_device* device, void* output, const void* input, ma_uint32 fram
 int main(int argc, char *argv[]) {
     UserData userData;
     ma_device device;
-    ma_device_config audioConfig = ma_device_config_init(ma_device_type_duplex);
-    audioConfig.capture.channels = channelCount(argc, argv);
-    audioConfig.playback.channels = channelCount(argc, argv);
-    audioConfig.dataCallback = callback;
-    audioConfig.pUserData = &userData;
-    ma_device_init(NULL, &audioConfig, &device);
+    ma_device_config config = ma_device_config_init(ma_device_type_duplex);
+    config.capture.channels = channelCount(argc, argv);
+    config.playback.channels = channelCount(argc, argv);
+    config.periodSizeInFrames = 64;
+    config.dataCallback = callback;
+    config.pUserData = &userData;
+    ma_device_init(NULL, &config, &device);
     userData.channelCount = channelCount(argc, argv);
-    userData.player = loadSoulPlayer(argc, argv, device.sampleRate, 64 /* TODO */);
+    userData.player = loadSoulPlayer(argc, argv, device.sampleRate, config.periodSizeInFrames);
 
     ma_device_start(&device);
     std::cout << "Press Enter to exit...";
