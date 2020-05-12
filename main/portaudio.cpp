@@ -50,7 +50,7 @@ int main() {
     error = Pa_OpenDefaultStream(&stream, 2, 2, paFloat32, sampleRate, bufferFrames, callback, &userData);
 
     // Setup SOUL
-    SOULPatchLibrary library("tmp/SOUL_PatchLoader.dylib");
+    SOULPatchLibrary library("build/SOUL_PatchLoader.dylib");
     PatchInstance::Ptr patch = library.createPatchFromFileBundle("echo.soulpatch");
     PatchPlayerConfiguration playerConfig;
     playerConfig.sampleRate = sampleRate;
