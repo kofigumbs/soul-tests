@@ -34,6 +34,8 @@ void push(const void *input, void *output, unsigned int frameCount, void *data) 
     context.numInputChannels = userData->channelCount;
     context.numOutputChannels = userData->channelCount;
 
+    // Deinterleave audio data  [ l0, r0, l1, r1, ... ]
+    // into SOUL pointer frame  [ &l0, &l1, ..., &r0, &r1, ... ]
     const float* inputChannels[context.numInputChannels][context.numFrames];
     const float* outputChannels[context.numOutputChannels][context.numFrames];
     context.inputChannels = (const float* const*) inputChannels;
