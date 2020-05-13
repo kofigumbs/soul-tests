@@ -13,14 +13,7 @@ int callback(const void *input, void *output, unsigned long frameCount, const Pa
     context.numFrames = frameCount;
     context.numInputChannels  = userData->channelCount;
     context.numOutputChannels = userData->channelCount;
-
-    unsigned int framesIn  = context.numFrames * context.numInputChannels,
-                 framesOut = context.numFrames * context.numOutputChannels;
-    float *inputChannels[framesIn], *outputChannels[framesOut];
-    for (int i = 0; i < framesIn;  i++) inputChannels[i]  = ((float (*)) input)  + i;
-    for (int i = 0; i < framesOut; i++) outputChannels[i] = ((float (*)) output) + i;
-    context.inputChannels = inputChannels;
-    context.outputChannels = outputChannels;
+    deinterleavePointers(context, input, output);
 
     // Render SOUL frame
     userData->player->render(context);

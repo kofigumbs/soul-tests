@@ -14,14 +14,7 @@ int callback(void *output, void *input, unsigned int frameCount, double streamTi
     context.numFrames = frameCount;
     context.numInputChannels  = userData->channelCount;
     context.numOutputChannels = userData->channelCount;
-
-    unsigned int framesIn  = context.numFrames * context.numInputChannels,
-                 framesOut = context.numFrames * context.numOutputChannels;
-    float *inputChannels[framesIn], *outputChannels[framesOut];
-    for (int i = 0; i < framesIn;  i++) inputChannels[i]  = ((float (*)) input)  + i;
-    for (int i = 0; i < framesOut; i++) outputChannels[i] = ((float (*)) output) + i;
-    context.inputChannels = inputChannels;
-    context.outputChannels = outputChannels;
+    deinterleavePointers(context, input, output);
 
     // Render SOUL frame
     userData->player->render(context);
@@ -34,14 +27,12 @@ int main(int argc, char* argv[]) {
         UserData userData;
         double sampleRate = 44100; // TODO use device default
         unsigned int bufferFrames = 64;
-        RtAudio::StreamOptions options;
-        options.flags = RTAUDIO_NONINTERLEAVED;
         RtAudio::StreamParameters iParams, oParams;
         iParams.nChannels = channelCount(argc, argv);
         oParams.nChannels = channelCount(argc, argv);
         iParams.deviceId = dac.getDefaultInputDevice();
         oParams.deviceId = dac.getDefaultOutputDevice();
-        dac.openStream(&oParams, &iParams, RTAUDIO_FLOAT32, sampleRate, &bufferFrames, &callback, (void*) &userData, &options);
+        dac.openStream(&oParams, &iParams, RTAUDIO_FLOAT32, sampleRate, &bufferFrames, &callback, (void*) &userData);
         userData.channelCount = channelCount(argc, argv);
         userData.player = loadSoulPlayer(argc, argv, sampleRate, bufferFrames);
 
