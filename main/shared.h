@@ -50,6 +50,13 @@ void push(const void *input, void *output, unsigned int frameCount, void *data) 
     userData->player->render(context);
 }
 
+// <https://github.com/soul-lang/SOUL/blob/master/source/API/soul_patch/helper_classes/soul_patch_AudioProcessor.h#L222-L230>
+int countBuses(Span<Bus> buses) {
+    int total = 0;
+    for (auto& b : buses) total += static_cast<int> (b.numChannels);
+    return total;
+}
+
 int main(int argc, char *argv[]) {
     bool mono;
     if      (argc == 2 && strncmp(argv[1], "mono",   4) == 0) mono = true;
@@ -64,6 +71,9 @@ int main(int argc, char *argv[]) {
     playerConfig.sampleRate = 44100; // TODO
     playerConfig.maxFramesPerBlock = 64; // TODO
     userData.player = patch->compileNewPlayer(playerConfig, NULL, NULL, NULL, NULL);
+
+    assert(countBuses(userData.player->getInputBuses())  == userData.channelCount);
+    assert(countBuses(userData.player->getOutputBuses()) == userData.channelCount);
 
     play(playerConfig.sampleRate, playerConfig.maxFramesPerBlock, &userData);
     return 0;
