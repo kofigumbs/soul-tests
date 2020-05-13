@@ -13,6 +13,7 @@ void play(double sampleRate, unsigned int frameCount, UserData *userData) {
     ma_device_config config = ma_device_config_init(ma_device_type_duplex);
     config.capture.channels = userData->channelCount;
     config.playback.channels = userData->channelCount;
+    config.sampleRate = sampleRate;
     config.periodSizeInFrames = frameCount;
     config.dataCallback = callback;
     config.pUserData = userData;

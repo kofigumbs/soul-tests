@@ -7,20 +7,20 @@ struct UserData {
     unsigned int channelCount;
 };
 
-// Implementations define this
+// Implementations _MUST_ define this
 void play(double sampleRate, unsigned int frameCount, UserData *userData);
 
-// Implementations call this between starting and stopping the driver
+// Implementations may call this between starting and stopping the driver
 void wait() {
     std::cout << "Press Enter to exit...";
     std::getchar();
 }
 
-// Implementations call this from their callback function
+// Implementations _MUST_ call this from their callback function
 void push(const void *input, void *output, unsigned int frameCount, void *data) {
     auto inputArray = *((float(*)[]) input);
     auto outputArray = *((float(*)[]) output);
-    UserData* userData = (UserData (*)) data;
+    auto userData = (UserData (*)) data;
 
     const int maxMidi = 1024; // TODO what is a good number for this?
     MIDIMessage incomingMIDI[maxMidi], outgoingMIDI[maxMidi];
@@ -30,6 +30,7 @@ void push(const void *input, void *output, unsigned int frameCount, void *data) 
     context.numMIDIMessagesIn = 0;
     context.numMIDIMessagesOut = 0;
     context.maximumMIDIMessagesOut = maxMidi;
+    context.numFrames = frameCount;
     context.numInputChannels = userData->channelCount;
     context.numOutputChannels = userData->channelCount;
 
@@ -49,12 +50,12 @@ void push(const void *input, void *output, unsigned int frameCount, void *data) 
 
 int main(int argc, char *argv[]) {
     bool mono;
-    if      (argc == 2 && strncmp(argv[1], "mono",   4)) mono = true;
-    else if (argc == 2 && strncmp(argv[1], "stereo", 6)) mono = false;
+    if      (argc == 2 && strncmp(argv[1], "mono",   4) == 0) mono = true;
+    else if (argc == 2 && strncmp(argv[1], "stereo", 6) == 0) mono = false;
     else { std::cout << "USAGE: a.out {mono,stereo}\n"; return 1; }
 
     UserData userData;
-    userData.channelCount = mono ? 1: 2;
+    userData.channelCount = mono ? 1 : 2;
     SOULPatchLibrary library("build/SOUL_PatchLoader.dylib");
     PatchInstance::Ptr patch = library.createPatchFromFileBundle(mono ? "audio/mono.soulpatch" : "audio/stereo.soulpatch");
     PatchPlayerConfiguration playerConfig;

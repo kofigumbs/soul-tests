@@ -14,7 +14,7 @@ void play(double sampleRate, unsigned int frameCount, UserData *userData) {
     oParams.nChannels = userData->channelCount;
     iParams.deviceId = dac.getDefaultInputDevice();
     oParams.deviceId = dac.getDefaultOutputDevice();
-    dac.openStream(&oParams, &iParams, RTAUDIO_FLOAT32, sampleRate, &frameCount, &callback, (void*) &userData);
+    dac.openStream(&oParams, &iParams, RTAUDIO_FLOAT32, sampleRate, &frameCount, &callback, userData);
     dac.startStream();
     wait();
     dac.stopStream();
