@@ -2,7 +2,6 @@
 |---|---|---|
 |miniaudio|✅|⛔️|
 |RtAudio|✅|⛔️|
-|PortAudio|⛔️|⛔️|
 
 # Building Executables (macOS)
 
@@ -27,15 +26,6 @@
     ./build/a.out {mono,stereo}
     ```
 
-#### w/ PortAudio
-
-- Build portaudio with `./configure --enable-mac-universal=no && make`
--
-    ```
-    g++ -std=c++17 main/portaudio.cpp portaudio/lib/.libs/libportaudio.dylib -o ./build/a.out
-    install_name_tool -change /usr/local/lib/libportaudio.2.dylib @executable_path/../portaudio/lib/.libs/libportaudio.dylib ./build/a.out
-    ./build/a.out {mono,stereo}
-    ```
 
 # What is this
 
