@@ -1,6 +1,6 @@
 ||Mono|Stereo|
 |---|---|---|
-|miniaudio|✅|✅|
+|miniaudio|✅|⛔️|
 |RtAudio|✅|⛔️|
 |PortAudio|⛔️|⛔️|
 
