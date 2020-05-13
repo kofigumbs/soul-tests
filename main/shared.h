@@ -18,8 +18,8 @@ void wait() {
 
 // Implementations _MUST_ call this from their callback function
 void push(const void *input, void *output, unsigned int frameCount, void *data) {
-    auto inputArray = *((float(*)[]) input);
-    auto outputArray = *((float(*)[]) output);
+    auto inputArray = (float(*)) input;
+    auto outputArray = (float(*)) output;
     auto userData = (UserData (*)) data;
 
     const int maxMidi = 1024; // TODO what is a good number for this?
@@ -42,10 +42,10 @@ void push(const void *input, void *output, unsigned int frameCount, void *data) 
     context.outputChannels = (float* const*) outputChannels;
     for (int channel = 0; channel < context.numInputChannels; channel++)
         for (int frame = 0; frame < context.numFrames; frame++)
-            inputChannels[channel][frame] = &inputArray[frame*context.numInputChannels + channel];
+            inputChannels[channel][frame]  = inputArray  + channel + frame*context.numInputChannels;
     for (int channel = 0; channel < context.numOutputChannels; channel++)
         for (int frame = 0; frame < context.numFrames; frame++)
-            outputChannels[channel][frame] = &outputArray[frame*context.numOutputChannels + channel];
+            outputChannels[channel][frame] = outputArray + channel + frame*context.numOutputChannels;
 
     userData->player->render(context);
 }
@@ -59,17 +59,18 @@ int countBuses(Span<Bus> buses) {
 
 int main(int argc, char *argv[]) {
     bool mono;
-    if      (argc == 2 && strncmp(argv[1], "mono",   4) == 0) mono = true;
-    else if (argc == 2 && strncmp(argv[1], "stereo", 6) == 0) mono = false;
+    if      (argc == 2 && strcmp(argv[1], "mono")   == 0) mono = true;
+    else if (argc == 2 && strcmp(argv[1], "stereo") == 0) mono = false;
     else { std::cout << "USAGE: a.out {mono,stereo}\n"; return 1; }
 
-    UserData userData;
-    userData.channelCount = mono ? 1 : 2;
     SOULPatchLibrary library("build/SOUL_PatchLoader.dylib");
     PatchInstance::Ptr patch = library.createPatchFromFileBundle(mono ? "audio/mono.soulpatch" : "audio/stereo.soulpatch");
     PatchPlayerConfiguration playerConfig;
     playerConfig.sampleRate = 44100; // TODO
     playerConfig.maxFramesPerBlock = 64; // TODO
+
+    UserData userData;
+    userData.channelCount = mono ? 1 : 2;
     userData.player = patch->compileNewPlayer(playerConfig, NULL, NULL, NULL, NULL);
 
     assert(countBuses(userData.player->getInputBuses())  == userData.channelCount);
