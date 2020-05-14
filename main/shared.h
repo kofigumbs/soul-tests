@@ -18,9 +18,12 @@ void wait() {
 
 // Implementations _MUST_ call this from their callback function
 void push(const void *input, void *output, unsigned int frameCount, void *data) {
-    auto inputArray = (float(*)) input;
-    auto outputArray = (float(*)) output;
     auto userData = (UserData (*)) data;
+    float *inputChannels[userData->channelCount], *outputChannels[userData->channelCount];
+    for (int i = 0; i < userData->channelCount; i++) {
+      inputChannels[i]  = ((float*) input)  + i*frameCount;
+      outputChannels[i] = ((float*) output) + i*frameCount;
+    }
 
     const int maxMidi = 1024; // TODO what is a good number for this?
     MIDIMessage incomingMIDI[maxMidi], outgoingMIDI[maxMidi];
@@ -33,19 +36,8 @@ void push(const void *input, void *output, unsigned int frameCount, void *data) 
     context.numFrames = frameCount;
     context.numInputChannels = userData->channelCount;
     context.numOutputChannels = userData->channelCount;
-
-    // Deinterleave audio data  [ l0, r0, l1, r1, ... ]
-    // into SOUL pointer frame  [ &l0, &l1, ..., &r0, &r1, ... ]
-    const float* inputChannels[context.numInputChannels][context.numFrames];
-    const float* outputChannels[context.numOutputChannels][context.numFrames];
     context.inputChannels = (const float* const*) inputChannels;
     context.outputChannels = (float* const*) outputChannels;
-    for (int channel = 0; channel < context.numInputChannels; channel++)
-        for (int frame = 0; frame < context.numFrames; frame++)
-            inputChannels[channel][frame]  = inputArray  + channel + frame*context.numInputChannels;
-    for (int channel = 0; channel < context.numOutputChannels; channel++)
-        for (int frame = 0; frame < context.numFrames; frame++)
-            outputChannels[channel][frame] = outputArray + channel + frame*context.numOutputChannels;
 
     userData->player->render(context);
 }

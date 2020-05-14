@@ -1,3 +1,4 @@
+#define MA_NO_JACK
 #define MINIAUDIO_IMPLEMENTATION
 
 #include <iostream>
@@ -5,7 +6,18 @@
 #include "../miniaudio/miniaudio.h"
 
 void callback(ma_device* device, void* output, const void* input, ma_uint32 frameCount) {
-    push(input, output, frameCount, device->pUserData);
+    float deinterleavedInput[device->capture.channels][frameCount],
+          deinterleavedOutput[device->playback.channels][frameCount];
+
+    for (int channel = 0; channel < device->capture.channels; channel++)
+        for (int frame = 0; frame < frameCount; frame++)
+            deinterleavedInput[channel][frame]  = ((float*) input)[channel + frame*device->capture.channels];
+
+    push(deinterleavedInput, deinterleavedOutput, frameCount, device->pUserData);
+
+    for (int channel = 0; channel < device->playback.channels; channel++)
+        for (int frame = 0; frame < frameCount; frame++)
+            ((float*) output)[channel + frame*device->playback.channels] = deinterleavedOutput[channel][frame];
 }
 
 void play(double sampleRate, unsigned int frameCount, UserData *userData) {

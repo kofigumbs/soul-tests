@@ -1,8 +1,3 @@
-||Mono|Stereo|
-|---|---|---|
-|miniaudio|✅|⛔️|
-|RtAudio|✅|⛔️|
-
 # Building Executables (macOS)
 
 - ***⚠️ WARNING: Use headphones!***
