@@ -13,11 +13,9 @@
 
 #### w/ RtAudio
 
-- Build RtAudio submodule with instructions from <https://github.com/thestk/rtaudio/blob/master/install.txt>
 - 
     ```
-    g++ -std=c++17 main/rtaudio.cpp rtaudio/.libs/librtaudio.dylib -o ./build/a.out
-    install_name_tool -change /usr/local/lib/librtaudio.6.dylib @executable_path/../rtaudio/.libs/librtaudio.dylib ./build/a.out
+    g++ -std=c++17 main/rtaudio.cpp rtaudio/RtAudio.cpp -D__MACOSX_CORE__ -framework CoreAudio -framework CoreFoundation -lpthread -o build/a.out
     ./build/a.out {mono,stereo}
     ```
 
