@@ -21,8 +21,8 @@ void push(const void *input, void *output, unsigned int frameCount, void *data) 
     auto userData = (UserData (*)) data;
     float *inputChannels[userData->channelCount], *outputChannels[userData->channelCount];
     for (int i = 0; i < userData->channelCount; i++) {
-      inputChannels[i]  = ((float*) input)  + i*frameCount;
-      outputChannels[i] = ((float*) output) + i*frameCount;
+        inputChannels[i]  = ((float*) input)  + i*frameCount;
+        outputChannels[i] = ((float*) output) + i*frameCount;
     }
 
     const int maxMidi = 1024; // TODO what is a good number for this?

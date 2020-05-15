@@ -6,6 +6,7 @@
 #include "../miniaudio/miniaudio.h"
 
 void callback(ma_device* device, void* output, const void* input, ma_uint32 frameCount) {
+    // TODO ma_deinterleave_pcm_frames and ma_interleave_pcm_frames should work here, but I couldn't figure it out
     float deinterleavedInput[device->capture.channels][frameCount],
           deinterleavedOutput[device->playback.channels][frameCount];
 
